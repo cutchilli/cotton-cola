@@ -1,0 +1,23 @@
+.tool-bar {
+    width: 100%;
+    height: 3.5rem;
+    background-color: #9B51E0;
+    -webkit-box-shadow: 0px 3px 15px 3px rgba(0,0,0,0.54);
+    -moz-box-shadow: 0px 3px 15px 3px rgba(0,0,0,0.54);
+    box-shadow: 0px 3px 15px 3px rgba(0,0,0,0.54);
+    position: fixed;
+    overflow: hidden;
+    z-index: 9999;
+}
+
+.tool-bar .app-name {
+    color: white;
+    line-height: 3.5rem;
+    font-size: 1.25rem;
+    margin-left: 0.5rem;
+}
+
+.tool-bar button {
+    font-size: 0.65rem;
+    margin-left: 1rem;
+}

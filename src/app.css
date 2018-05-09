@@ -1,0 +1,30 @@
+.app-work-area {
+  margin-top: 3.5rem;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
+
+.drop-zone-hidden {
+  display: none;
+}
+
+.drop-zone {
+  position: relative;
+  margin: 2.5rem;
+  padding: 2.5rem;
+  text-align: center;
+  border: 1px dotted black;
+}
+
+.drop-zone.active {
+  border-color: green;
+}
+
+.drop-zone.accept {
+  border-color: green;
+}
+
+.drop-zone.reject {
+  border-color: red;
+}

@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import Dropzone from 'react-dropzone';
 
+import 'normalize.css';
+
 import ToolBar from './components/tool-bar';
 import WorkArea from './components/work-area';
 
-import 'normalize.css';
 import './app.css';
 
 class App extends Component {
@@ -30,14 +31,14 @@ class App extends Component {
 
     const reader = new FileReader();
     const image = new Image();
-    reader.addEventListener('load', () => {      
+    reader.addEventListener('load', () => {
       image.src = reader.result;
     });
 
     image.addEventListener('load', () => {
       this.setState(Object.assign(this.state, {
         workAreaImage: image,
-        workAreaScale: 1
+        workAreaScale: 1,
       }));
     });
 
@@ -51,33 +52,33 @@ class App extends Component {
 
     reader.readAsDataURL(acceptedFiles[0]);
   }
-  
+
   onZoomIn() {
-    let workAreaScale = this.state.workAreaScale;
+    let { workAreaScale } = this.state;
 
     workAreaScale += 0.1;
 
     this.setState(Object.assign(this.state, {
-      workAreaScale
+      workAreaScale,
     }));
   }
 
   onZoomOut() {
-    let workAreaScale = this.state.workAreaScale;
+    let { workAreaScale } = this.state;
 
     workAreaScale -= 0.1;
 
     if (workAreaScale < 0) workAreaScale = 0.1;
 
     this.setState(Object.assign(this.state, {
-      workAreaScale
+      workAreaScale,
     }));
   }
 
   onCloseFile() {
     this.setState(Object.assign(this.state, {
       workAreaImage: null,
-      workAreaScale: 1
+      workAreaScale: 1,
     }));
   }
 
@@ -96,21 +97,22 @@ class App extends Component {
         <div className="app-work-area">
           <Dropzone
             disabled={imageIsLoaded}
-            className={workAreaImage === null ? "drop-zone" : "drop-zone-hidden"}
+            className={workAreaImage === null ? 'drop-zone' : 'drop-zone-hidden'}
             activeClassName="active"
             acceptClassName="accept"
             rejectClassName="reject"
             multiple={false}
-            accept="image/jpeg, image/png, image/gif" 
-            onDrop={this.onImageDrop}>
-            {({ isDragActive, isDragReject, acceptedFiles, rejectedFiles }) => {
+            accept="image/jpeg, image/png, image/gif"
+            onDrop={this.onImageDrop}
+          >
+            {({ isDragActive, isDragReject }) => {
               if (isDragReject) {
-                return "Invalid file.";
+                return 'Invalid file.';
               }
               if (isDragActive) {
-                return "Drop this file to get started";
+                return 'Drop this file to get started';
               }
-              return "Drag a sprite sheet image file on me.";
+              return 'Drag a sprite sheet image file on me.';
             }}
           </Dropzone>
           <WorkArea image={workAreaImage} scale={workAreaScale} />

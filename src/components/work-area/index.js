@@ -29,19 +29,26 @@ function getPosition(elIncoming) {
   };
 }
 
-function drawBox(x1, y1, x2, y2, key) {
+function drawBox(scale, fill, x1, y1, x2, y2, key) {
+  const style = {
+    width: Math.abs(x1 - x2) * scale,
+    height: Math.abs(y1 - y2) * scale,
+    top: Math.min(y1, y2) * scale,
+    left: Math.min(x1, x2) * scale,
+    position: 'absolute',
+    display: 'inline-block',
+    border: '1px solid #FF0000',
+  };
+
+  if (fill) {
+    style.backgroundColor = 'white';
+    style.opacity = 0.5;
+  }
+
   return (
     <div
       key={key}
-      style={{
-        width: Math.abs(x1 - x2),
-        height: Math.abs(y1 - y2),
-        top: Math.min(y1, y2),
-        left: Math.min(x1, x2),
-        position: 'absolute',
-        display: 'inline-block',
-        border: '1px solid #FF0000',
-      }}
+      style={style}
     />
   );
 }
@@ -53,7 +60,7 @@ function drawCrossHair(overlayStyle, x, y) {
     display: 'inline-block',
     height: '100%',
     position: 'absolute',
-    borderLeft: '1px solid green',
+    borderLeft: '1px solid cyan',
     left: x,
   };
 
@@ -61,7 +68,7 @@ function drawCrossHair(overlayStyle, x, y) {
     display: 'inline-block',
     width: '100%',
     position: 'absolute',
-    borderTop: '1px solid green',
+    borderTop: '1px solid cyan',
     top: y,
   };
 
@@ -121,11 +128,10 @@ class WorkArea extends Component {
       // Finished drawing a box
       stateModification.isDrawingBox = false;
       const newBox = {
-        x1: boxX,
-        y1: boxY,
-        x2: mouseX,
-        y2: mouseY,
-        createdAtScale: scale,
+        x1: boxX / scale,
+        y1: boxY / scale,
+        x2: mouseX / scale,
+        y2: mouseY / scale,
       };
 
       stateModification.boxes = [...boxes, newBox];
@@ -157,7 +163,14 @@ class WorkArea extends Component {
 
   render() {
     const { image, scale } = this.props;
-    const { boxes, mouseX, mouseY } = this.state;
+    const {
+      boxes,
+      mouseX,
+      mouseY,
+      isDrawingBox,
+      boxX,
+      boxY,
+    } = this.state;
 
     const workAreaStyle = {
       width: 0,
@@ -176,9 +189,14 @@ class WorkArea extends Component {
     // Draw cross hair
     const crossHair = drawCrossHair(overlayStyle, mouseX, mouseY);
 
-    // Todo scale created at scale, to now scale
-    const spriteBoxes = boxes.map((box, idx) => drawBox(box.x1, box.y1, box.x2, box.y2, idx));
+    const spriteBoxes = boxes
+      .map((box, idx) => drawBox(scale, false, box.x1, box.y1, box.x2, box.y2, idx));
     const currentBox = null;
+
+    // Draw current box
+    if (isDrawingBox) {
+      spriteBoxes.push(drawBox(1, true, boxX, boxY, mouseX, mouseY, -1));
+    }
 
     return (
       <div className="work-area-container">

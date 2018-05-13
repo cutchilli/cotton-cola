@@ -13,12 +13,12 @@ function getPosition(elIncoming) {
       const xScroll = el.scrollLeft || document.documentElement.scrollLeft;
       const yScroll = el.scrollTop || document.documentElement.scrollTop;
 
-      xPos += (el.offsetLeft - xScroll + el.clientLeft);
-      yPos += (el.offsetTop - yScroll + el.clientTop);
+      xPos += ((el.offsetLeft - xScroll) + el.clientLeft);
+      yPos += ((el.offsetTop - yScroll) + el.clientTop);
     } else {
       // for all other non-BODY elements
-      xPos += (el.offsetLeft - el.scrollLeft + el.clientLeft);
-      yPos += (el.offsetTop - el.scrollTop + el.clientTop);
+      xPos += ((el.offsetLeft - el.scrollLeft) + el.clientLeft);
+      yPos += ((el.offsetTop - el.scrollTop) + el.clientTop);
     }
 
     el = el.offsetParent;
@@ -27,6 +27,50 @@ function getPosition(elIncoming) {
     x: xPos,
     y: yPos,
   };
+}
+
+function drawBox(x1, y1, x2, y2, key) {
+  return (
+    <div
+      key={key}
+      style={{
+        width: Math.abs(x1 - x2),
+        height: Math.abs(y1 - y2),
+        top: Math.min(y1, y2),
+        left: Math.min(x1, x2),
+        position: 'absolute',
+        display: 'inline-block',
+        border: '1px solid #FF0000',
+      }}
+    />
+  );
+}
+
+function drawCrossHair(overlayStyle, x, y) {
+  if (!x || !y) return (<div />);
+
+  const verticalCrossHairStyle = {
+    display: 'inline-block',
+    height: '100%',
+    position: 'absolute',
+    borderLeft: '1px solid green',
+    left: x,
+  };
+
+  const horizontalCrossHairStyle = {
+    display: 'inline-block',
+    width: '100%',
+    position: 'absolute',
+    borderTop: '1px solid green',
+    top: y,
+  };
+
+  return (
+    <div style={overlayStyle}>
+      <div style={verticalCrossHairStyle} />
+      <div style={horizontalCrossHairStyle} />
+    </div>
+  );
 }
 
 class WorkArea extends Component {
@@ -111,28 +155,9 @@ class WorkArea extends Component {
     canvas.getContext('2d').drawImage(image, 0, 0, image.width * scale, image.height * scale);
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  drawBox(x1, y1, x2, y2, key) {
-    return (
-      <div
-        key={key}
-        style={{
-          width: Math.abs(x1 - x2),
-          height: Math.abs(y1 - y2),
-          top: Math.min(y1, y2),
-          left: Math.min(x1, x2),
-          position: 'absolute',
-          display: 'inline-block',
-          float: 'left',
-          border: '1px solid #FF0000',
-        }}
-      />
-    );
-  }
-
   render() {
     const { image, scale } = this.props;
-    const { boxes } = this.state;
+    const { boxes, mouseX, mouseY } = this.state;
 
     const workAreaStyle = {
       width: 0,
@@ -143,14 +168,17 @@ class WorkArea extends Component {
     if (image) workAreaStyle.width = image.width * scale;
     if (image) workAreaStyle.height = image.height * scale;
 
-    // Todo scale created at scale, to now scale
-    const spriteBoxes = boxes.map((box, idx) => this.drawBox(box.x1, box.y1, box.x2, box.y2, idx));
-    const currentBox = null;
-
     const overlayStyle = {
       ...workAreaStyle,
       pointerEvents: 'none',
     };
+
+    // Draw cross hair
+    const crossHair = drawCrossHair(overlayStyle, mouseX, mouseY);
+
+    // Todo scale created at scale, to now scale
+    const spriteBoxes = boxes.map((box, idx) => drawBox(box.x1, box.y1, box.x2, box.y2, idx));
+    const currentBox = null;
 
     return (
       <div className="work-area-container">
@@ -162,6 +190,7 @@ class WorkArea extends Component {
           height={workAreaStyle.height}
           style={workAreaStyle}
         />
+        { crossHair }
         <div
           ref={this.overlayRef}
           style={overlayStyle}

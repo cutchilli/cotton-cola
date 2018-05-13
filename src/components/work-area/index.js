@@ -1,10 +1,39 @@
 import React, { Component } from 'react';
 import './styles.css';
 
+function getPosition(elIncoming) {
+  let el = elIncoming;
+
+  let xPos = 0;
+  let yPos = 0;
+
+  while (el) {
+    if (el.tagName === 'BODY') {
+      // deal with browser quirks with body/window/document and page scroll
+      const xScroll = el.scrollLeft || document.documentElement.scrollLeft;
+      const yScroll = el.scrollTop || document.documentElement.scrollTop;
+
+      xPos += (el.offsetLeft - xScroll + el.clientLeft);
+      yPos += (el.offsetTop - yScroll + el.clientTop);
+    } else {
+      // for all other non-BODY elements
+      xPos += (el.offsetLeft - el.scrollLeft + el.clientLeft);
+      yPos += (el.offsetTop - el.scrollTop + el.clientTop);
+    }
+
+    el = el.offsetParent;
+  }
+  return {
+    x: xPos,
+    y: yPos,
+  };
+}
+
 class WorkArea extends Component {
   constructor(...args) {
     super(...args);
 
+    this.overlayRef = React.createRef();
     this.canvasRef = React.createRef();
     this.state = {
       // Current Mouse Pos
@@ -61,13 +90,15 @@ class WorkArea extends Component {
     }
 
     this.setState(Object.assign(this.state, stateModification));
-    console.log(this.state);
   }
 
   onCanvasMove(e) {
+    // Calculate offset
+    const canvasPos = getPosition(this.canvasRef.current);
+
     this.setState(Object.assign(this.state, {
-      mouseX: e.clientX,
-      mouseY: e.clientY,
+      mouseX: e.clientX - canvasPos.x,
+      mouseY: e.clientY - canvasPos.y,
     }));
   }
 
@@ -131,7 +162,10 @@ class WorkArea extends Component {
           height={workAreaStyle.height}
           style={workAreaStyle}
         />
-        <div style={overlayStyle}>
+        <div
+          ref={this.overlayRef}
+          style={overlayStyle}
+        >
           { currentBox }
           { spriteBoxes }
         </div>

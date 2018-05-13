@@ -81,15 +81,19 @@ class WorkArea extends Component {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  drawBox(x1, y1, x2, y2) {
+  drawBox(x1, y1, x2, y2, key) {
     return (
-      <div style={{
-            width: Math.abs(x1 - x2),
-            height: Math.abs(y1 - y2),
-            top: Math.min(y1, y2),
-            left: Math.min(x1, x2),
-            position: 'relative',
-            border: '1px solid #FF0000',
+      <div
+        key={key}
+        style={{
+          width: Math.abs(x1 - x2),
+          height: Math.abs(y1 - y2),
+          top: Math.min(y1, y2),
+          left: Math.min(x1, x2),
+          position: 'absolute',
+          display: 'inline-block',
+          float: 'left',
+          border: '1px solid #FF0000',
         }}
       />
     );
@@ -99,35 +103,35 @@ class WorkArea extends Component {
     const { image, scale } = this.props;
     const { boxes } = this.state;
 
-    const canvasStyle = {
+    const workAreaStyle = {
       width: 0,
       height: 0,
-    };
-
-    if (image) canvasStyle.width = image.width * scale;
-    if (image) canvasStyle.height = image.height * scale;
-
-    // Todo scale created at scale, to now scale
-    const spriteBoxes = boxes.map(box => this.drawBox(box.x1, box.y1, box.x2, box.y2));
-    const currentBox = null;
-
-    const spriteBoxStyle = {
-      pointerEvents: 'none',
       position: 'absolute',
     };
 
+    if (image) workAreaStyle.width = image.width * scale;
+    if (image) workAreaStyle.height = image.height * scale;
+
+    // Todo scale created at scale, to now scale
+    const spriteBoxes = boxes.map((box, idx) => this.drawBox(box.x1, box.y1, box.x2, box.y2, idx));
+    const currentBox = null;
+
+    const overlayStyle = {
+      ...workAreaStyle,
+      pointerEvents: 'none',
+    };
+
     return (
-      <div>
+      <div className="work-area-container">
         <canvas
-          className="work-area-canvas"
           onMouseMove={this.onCanvasMove}
           onClick={this.onCanvasClick}
           ref={this.canvasRef}
-          width={canvasStyle.width}
-          height={canvasStyle.height}
-          style={canvasStyle}
+          width={workAreaStyle.width}
+          height={workAreaStyle.height}
+          style={workAreaStyle}
         />
-        <div style={spriteBoxStyle}>
+        <div style={overlayStyle}>
           { currentBox }
           { spriteBoxes }
         </div>

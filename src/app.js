@@ -122,7 +122,7 @@ class App extends Component {
           </div>
           <div className="json-viewer-container">
             <p className="json-view-title">Json view</p>
-            <ReactJson name="jsonView" theme="monokai" src={sampleJson} enableClipboard={false} displayDataTypes={false} />
+            <ReactJson theme="monokai" src={sampleJson} enableClipboard={false} displayDataTypes={false} />
           </div>
         </div>
       </div>

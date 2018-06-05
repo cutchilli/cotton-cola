@@ -3,11 +3,10 @@
 }
 
 .drop-zone {
-  position: relative;
-  margin: 2.5rem;
-  padding: 2.5rem;
+  height: 100%;
   text-align: center;
-  border: 1px dotted black;
+  border: 1px dashed black;
+  border-radius: 10px;
 }
 
 .drop-zone.active {

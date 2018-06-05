@@ -6,7 +6,6 @@ const ToolbarComp = styled('div')`
   height: 3.5rem;
   background-color: #9B51E0;
   box-shadow: rgba(0, 0, 0, 0.137255) 0px 0px 4px 0px, rgba(0, 0, 0, 0.278431) 0px 4px 8px 0px;
-  position: fixed;
   overflow: hidden;
   z-index: 9999;
 `;

@@ -9,7 +9,7 @@ import ToolBar from './components/tool-bar';
 import WorkArea from './components/work-area';
 import sampleJson from './samples/sample.json';
 
-import './app.css';
+import './dropzone.css';
 
 class App extends Component {
   constructor(...args) {
@@ -91,29 +91,29 @@ class App extends Component {
 
     const mainContainer = css`
       display: flex;
-      position: absolute;
       height: 100%;
       width: 100%;
     `;
 
     const leftSection = css`
-      margin-top: 3.5rem;
-      flex-grow: 3;
+      flex: 2;
+      padding: 1rem;
     `;
 
     const rightSection = css`
       background-color: rgb(39, 40, 34);
-      margin-top: 3.5rem;
       padding-left: 1rem;
-      width: 30%;
       height: 100%;
       line-height: 1rem;
+      flex: 1;
     `;
 
     const EmbossedTitle = styled('div')`
       color: white;
       text-align: center;
       padding: 1rem;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
       margin-right: 1rem;
       background: #272822;
       border-left: 1px solid #363831;
@@ -122,8 +122,15 @@ class App extends Component {
       border-bottom:  1px solid #1b1c17;
     `;
 
+    const pageContainer = css`
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+    `;
+
     return (
-      <div className="app">
+      <div className={pageContainer}>
         <ToolBar
           imageIsLoaded={imageIsLoaded}
           onZoomInClick={this.onZoomIn}

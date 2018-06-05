@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import Dropzone from 'react-dropzone';
+import ReactJson from 'react-json-view';
 
 import 'normalize.css';
 
 import ToolBar from './components/tool-bar';
 import WorkArea from './components/work-area';
+import sampleJson from './samples/sample.json';
 
 import './app.css';
 
@@ -94,28 +96,34 @@ class App extends Component {
           onZoomOutClick={this.onZoomOut}
           onCloseFileClick={this.onCloseFile}
         />
-        <div className="app-work-area">
-          <Dropzone
-            disabled={imageIsLoaded}
-            className={workAreaImage === null ? 'drop-zone' : 'drop-zone-hidden'}
-            activeClassName="active"
-            acceptClassName="accept"
-            rejectClassName="reject"
-            multiple={false}
-            accept="image/jpeg, image/png, image/gif"
-            onDrop={this.onImageDrop}
-          >
-            {({ isDragActive, isDragReject }) => {
-              if (isDragReject) {
-                return 'Invalid file.';
-              }
-              if (isDragActive) {
-                return 'Drop this file to get started';
-              }
-              return 'Drag a sprite sheet image file on me.';
-            }}
-          </Dropzone>
-          <WorkArea image={workAreaImage} scale={workAreaScale} />
+        <div className="main-area-container">
+          <div className="app-work-area">
+            <Dropzone
+              disabled={imageIsLoaded}
+              className={workAreaImage === null ? 'drop-zone' : 'drop-zone-hidden'}
+              activeClassName="active"
+              acceptClassName="accept"
+              rejectClassName="reject"
+              multiple={false}
+              accept="image/jpeg, image/png, image/gif"
+              onDrop={this.onImageDrop}
+            >
+              {({ isDragActive, isDragReject }) => {
+                if (isDragReject) {
+                  return 'Invalid file.';
+                }
+                if (isDragActive) {
+                  return 'Drop this file to get started';
+                }
+                return 'Drag a sprite sheet image file on me.';
+              }}
+            </Dropzone>
+            <WorkArea image={workAreaImage} scale={workAreaScale} />
+          </div>
+          <div className="json-viewer-container">
+            <p className="json-view-title">Json view</p>
+            <ReactJson name="jsonView" theme="monokai" src={sampleJson} enableClipboard={false} displayDataTypes={false} />
+          </div>
         </div>
       </div>
     );

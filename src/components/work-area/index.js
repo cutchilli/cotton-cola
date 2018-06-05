@@ -161,7 +161,11 @@ class WorkArea extends Component {
   }
 
   render() {
-    const { image, scale } = this.props;
+    const {
+      image,
+      scale,
+      drawDivRef,
+    } = this.props;
     const {
       boxes,
       mouseX,
@@ -177,8 +181,8 @@ class WorkArea extends Component {
       position: 'absolute',
     };
 
-    if (image) workAreaStyle.width = image.width * scale;
-    if (image) workAreaStyle.height = image.height * scale;
+    if (image) workAreaStyle.width = drawDivRef.current.offsetWidth * scale;
+    if (image) workAreaStyle.height = drawDivRef.current.offsetHeight * scale;
 
     const overlayStyle = {
       ...workAreaStyle,

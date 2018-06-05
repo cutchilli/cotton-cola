@@ -15,6 +15,8 @@ class App extends Component {
   constructor(...args) {
     super(...args);
 
+    this.drawDivRef = React.createRef();
+
     // Set up app state
     this.state = {
       workAreaImage: null,
@@ -138,7 +140,7 @@ class App extends Component {
           onCloseFileClick={this.onCloseFile}
         />
         <div className={mainContainer}>
-          <div className={leftSection}>
+          <div className={leftSection} ref={this.drawDivRef}>
             <Dropzone
               disabled={imageIsLoaded}
               className={workAreaImage === null ? 'drop-zone' : 'drop-zone-hidden'}
@@ -159,7 +161,7 @@ class App extends Component {
                 return 'Drag a sprite sheet image file on me.';
               }}
             </Dropzone>
-            <WorkArea image={workAreaImage} scale={workAreaScale} />
+            <WorkArea image={workAreaImage} scale={workAreaScale} drawDivRef={this.drawDivRef} />
           </div>
           <div className={rightSection}>
             <EmbossedTitle>Json view</EmbossedTitle>

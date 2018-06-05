@@ -7,7 +7,10 @@ import './index.css';
 import App from './app';
 import colaApp from './reducers';
 
-const store = createStore(colaApp);
+const store = createStore(
+  colaApp,
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+);
 
 ReactDOM.render(
   <Provider store={store}>

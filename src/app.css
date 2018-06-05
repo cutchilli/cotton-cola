@@ -21,36 +21,3 @@
 .drop-zone.reject {
   border-color: red;
 }
-
-.app-work-area {
-  margin-top: 3.5rem;
-  flex-grow: 3;
-}
-
-.json-viewer-container {
-  background-color: rgb(39, 40, 34);
-  margin-top: 3.5rem;
-  padding-left: 1rem;
-  width: 30%;
-  height: 100%;
-  line-height: 1rem;
-}
-
-.json-view-title {
-  color: white;
-  text-align: center;
-  padding: 1rem;
-  margin-right: 1rem;
-  background: #272822;
-  border-left: 1px solid #363831;
-  border-top: 1px solid #363831;
-  border-right: 1px solid #1b1c17;
-  border-bottom:  1px solid #1b1c17;
-}
-
-.main-area-container {
-  display: flex;
-  position: absolute;
-  height: 100%;
-  width: 100%;
-}

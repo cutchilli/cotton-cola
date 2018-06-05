@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import './styles.css';
 
 function getPosition(elIncoming) {
   let el = elIncoming;

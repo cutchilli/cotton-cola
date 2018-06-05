@@ -3,9 +3,9 @@
 }
 
 .drop-zone {
-  height: 100%;
+  height: 25%;
   text-align: center;
-  border: 1px dashed black;
+  border: 2px dashed black;
   border-radius: 10px;
 }
 

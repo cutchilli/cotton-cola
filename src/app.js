@@ -1,38 +1,74 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
+import { connect } from 'react-redux';
 import Dropzone from 'react-dropzone';
 import ReactJson from 'react-json-view';
 import styled, { css } from 'react-emotion';
 
-import 'normalize.css';
-
 import ToolBar from './components/tool-bar';
 import WorkArea from './components/work-area';
+import {
+  setWorkAreaImage,
+  setWorkAreaScale,
+} from './actions/index';
 import sampleJson from './samples/sample.json';
 
 import './dropzone.css';
 
-class App extends Component {
-  constructor(...args) {
-    super(...args);
+class App extends PureComponent {
+  constructor(props) {
+    super(props);
 
+    // Bindies
     this.drawDivRef = React.createRef();
-
-    // Set up app state
-    this.state = {
-      workAreaImage: null,
-      workAreaScale: 1,
-    };
 
     // Bind up dem crispy events bruz
     this.onImageDrop = this.onImageDrop.bind(this);
     this.onZoomIn = this.onZoomIn.bind(this);
     this.onZoomOut = this.onZoomOut.bind(this);
     this.onCloseFile = this.onCloseFile.bind(this);
+    this.onImageDrop = this.onImageDrop.bind(this);
   }
 
-  // Event handlers
+  onZoomIn() {
+    const {
+      workArea: { scale },
+      actions: { scaleImage },
+    } = this.props;
+    const workAreaScale = scale + 0.1;
+
+    scaleImage(workAreaScale);
+  }
+
+  onZoomOut() {
+    const {
+      workArea: { scale },
+      actions: { scaleImage },
+    } = this.props;
+    let workAreaScale = scale - 0.1;
+
+    if (workAreaScale < 0) workAreaScale = 0.1;
+
+    scaleImage(workAreaScale);
+  }
+
+  onCloseFile() {
+    const {
+      actions: {
+        setImage,
+        scaleImage,
+      },
+    } = this.props;
+    setImage(null);
+    scaleImage(null);
+  }
+
   onImageDrop(acceptedFiles) {
-    if (!acceptedFiles || acceptedFiles.length === 0 || acceptedFiles.length > 1) return;
+    const { actions: { setImage } } = this.props;
+
+    if (!acceptedFiles
+      || acceptedFiles.length === 0
+      || acceptedFiles.length > 1
+    ) return;
 
     const reader = new FileReader();
     const image = new Image();
@@ -41,10 +77,7 @@ class App extends Component {
     });
 
     image.addEventListener('load', () => {
-      this.setState(Object.assign(this.state, {
-        workAreaImage: image,
-        workAreaScale: 1,
-      }));
+      setImage(image);
     });
 
     reader.addEventListener('error', () => {
@@ -58,38 +91,10 @@ class App extends Component {
     reader.readAsDataURL(acceptedFiles[0]);
   }
 
-  onZoomIn() {
-    let { workAreaScale } = this.state;
-
-    workAreaScale += 0.1;
-
-    this.setState(Object.assign(this.state, {
-      workAreaScale,
-    }));
-  }
-
-  onZoomOut() {
-    let { workAreaScale } = this.state;
-
-    workAreaScale -= 0.1;
-
-    if (workAreaScale < 0) workAreaScale = 0.1;
-
-    this.setState(Object.assign(this.state, {
-      workAreaScale,
-    }));
-  }
-
-  onCloseFile() {
-    this.setState(Object.assign(this.state, {
-      workAreaImage: null,
-      workAreaScale: 1,
-    }));
-  }
-
   render() {
-    const { workAreaImage, workAreaScale } = this.state;
-    const imageIsLoaded = !!workAreaImage;
+    const { workArea } = this.props;
+    const { image, scale } = workArea;
+    const imageIsLoaded = !!workArea.image;
 
     const mainContainer = css`
       display: flex;
@@ -143,7 +148,7 @@ class App extends Component {
           <div className={leftSection} ref={this.drawDivRef}>
             <Dropzone
               disabled={imageIsLoaded}
-              className={workAreaImage === null ? 'drop-zone' : 'drop-zone-hidden'}
+              className={image === null ? 'drop-zone' : 'drop-zone-hidden'}
               activeClassName="active"
               acceptClassName="accept"
               rejectClassName="reject"
@@ -161,7 +166,7 @@ class App extends Component {
                 return 'Drag a sprite sheet image file on me.';
               }}
             </Dropzone>
-            <WorkArea image={workAreaImage} scale={workAreaScale} drawDivRef={this.drawDivRef} />
+            <WorkArea image={image} scale={scale} drawDivRef={this.drawDivRef} />
           </div>
           <div className={rightSection}>
             <EmbossedTitle>Json view</EmbossedTitle>
@@ -173,4 +178,19 @@ class App extends Component {
   }
 }
 
-export default App;
+const mapStateToProps = ({ workArea }) => ({
+  workArea,
+});
+
+const mapDispatchToProps = dispatch => ({
+  actions: {
+    closeImage: () => dispatch(setWorkAreaImage(null)),
+    scaleImage: scale => dispatch(setWorkAreaScale(scale)),
+    setImage: image => dispatch(setWorkAreaImage(image)),
+  },
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(App);

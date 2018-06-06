@@ -1,0 +1,22 @@
+.drop-zone-hidden {
+  display: none;
+}
+
+.drop-zone {
+  height: 25%;
+  text-align: center;
+  border: 2px dashed black;
+  border-radius: 10px;
+}
+
+.drop-zone.active {
+  border-color: green;
+}
+
+.drop-zone.accept {
+  border-color: green;
+}
+
+.drop-zone.reject {
+  border-color: red;
+}

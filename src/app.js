@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Dropzone from 'react-dropzone';
 import ReactJson from 'react-json-view';
+import styled, { css } from 'react-emotion';
 
 import 'normalize.css';
 
@@ -8,11 +9,13 @@ import ToolBar from './components/tool-bar';
 import WorkArea from './components/work-area';
 import sampleJson from './samples/sample.json';
 
-import './app.css';
+import './dropzone.css';
 
 class App extends Component {
   constructor(...args) {
     super(...args);
+
+    this.drawDivRef = React.createRef();
 
     // Set up app state
     this.state = {
@@ -88,16 +91,56 @@ class App extends Component {
     const { workAreaImage, workAreaScale } = this.state;
     const imageIsLoaded = !!workAreaImage;
 
+    const mainContainer = css`
+      display: flex;
+      height: 100%;
+      width: 100%;
+    `;
+
+    const leftSection = css`
+      flex: 2;
+      padding: 1rem;
+    `;
+
+    const rightSection = css`
+      background-color: rgb(39, 40, 34);
+      padding-left: 1rem;
+      height: 100%;
+      line-height: 1rem;
+      flex: 1;
+    `;
+
+    const EmbossedTitle = styled('div')`
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+      margin-right: 1rem;
+      background: #272822;
+      border-left: 1px solid #363831;
+      border-top: 1px solid #363831;
+      border-right: 1px solid #1b1c17;
+      border-bottom:  1px solid #1b1c17;
+    `;
+
+    const pageContainer = css`
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+    `;
+
     return (
-      <div className="app">
+      <div className={pageContainer}>
         <ToolBar
           imageIsLoaded={imageIsLoaded}
           onZoomInClick={this.onZoomIn}
           onZoomOutClick={this.onZoomOut}
           onCloseFileClick={this.onCloseFile}
         />
-        <div className="main-area-container">
-          <div className="app-work-area">
+        <div className={mainContainer}>
+          <div className={leftSection} ref={this.drawDivRef}>
             <Dropzone
               disabled={imageIsLoaded}
               className={workAreaImage === null ? 'drop-zone' : 'drop-zone-hidden'}
@@ -118,10 +161,10 @@ class App extends Component {
                 return 'Drag a sprite sheet image file on me.';
               }}
             </Dropzone>
-            <WorkArea image={workAreaImage} scale={workAreaScale} />
+            <WorkArea image={workAreaImage} scale={workAreaScale} drawDivRef={this.drawDivRef} />
           </div>
-          <div className="json-viewer-container">
-            <p className="json-view-title">Json view</p>
+          <div className={rightSection}>
+            <EmbossedTitle>Json view</EmbossedTitle>
             <ReactJson theme="monokai" src={sampleJson} enableClipboard={false} displayDataTypes={false} />
           </div>
         </div>

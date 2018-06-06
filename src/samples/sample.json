@@ -1,25 +1,105 @@
 {
-  "glossary": {
-    "title": "example glossary",
-    "GlossDiv": {
-      "title": "S",
-      "GlossList": {
-        "GlossEntry": {
-          "ID": "SGML",
-          "SortAs": "SGML",
-          "GlossTerm": "Standard Generalized Markup Language",
-          "Acronym": "SGML",
-          "Abbrev": "ISO 8879:1986",
-          "GlossDef": {
-            "para": "A meta-markup language, used to create markup languages such as DocBook.",
-            "GlossSeeAlso": [
-              "GML",
-              "XML"
-            ]
-          },
-          "GlossSee": "markup"
-        }
-      }
-    }
-  }
+  "imageUrl": "./atlas.png",
+  "animations": [{
+    "name": "idle",
+    "animationLength": 0.1,
+    "sprites": [
+      "idle1",
+      "idle2",
+      "idle3",
+      "idle4"
+    ]
+  }, {
+    "name": "run",
+    "animationLength": 0.08,
+    "sprites": [
+      "run1",
+      "run2",
+      "run3",
+      "run4",
+      "run5",
+      "run6",
+      "run7",
+      "run8"
+    ]
+  }],
+  "sprites": [{
+    "name": "ground",
+    "x": 62.7,
+    "y": 160,
+    "width": 20,
+    "height": 20
+  }, {
+    "name": "idle1",
+    "x": 62.7,
+    "y": 225.6,
+    "width": 22,
+    "height": 32
+  }, {
+    "name": "idle2",
+    "x": 84.7,
+    "y": 225.6,
+    "width": 22,
+    "height": 32
+  }, {
+    "name": "idle3",
+    "x": 106.7,
+    "y": 225.6,
+    "width": 22,
+    "height": 32
+  }, {
+    "name": "idle4",
+    "x": 128.7,
+    "y": 225.6,
+    "width": 22,
+    "height": 32
+  }, {
+    "name": "run1",
+    "x": 150.7,
+    "y": 225.6,
+    "width": 22,
+    "height": 32
+  }, {
+    "name": "run2",
+    "x": 172.7,
+    "y": 225.6,
+    "width": 22,
+    "height": 32
+  }, {
+    "name": "run3",
+    "x": 194.7,
+    "y": 225.6,
+    "width": 22,
+    "height": 32
+  }, {
+    "name": "run4",
+    "x": 216.7,
+    "y": 225.6,
+    "width": 22,
+    "height": 32
+  }, {
+    "name": "run5",
+    "x": 283.85,
+    "y": 225.6,
+    "width": 22,
+    "height": 32
+  }, {
+    "name": "run6",
+    "x": 260.7,
+    "y": 225.6,
+    "width": 22,
+    "height": 32
+  }, {
+    "name": "run7",
+    "x": 282.7,
+    "y": 225.6,
+    "width": 22,
+    "height": 32
+  }, {
+    "name": "run8",
+    "x": 304.7,
+    "y": 225.6,
+    "width": 22,
+    "height": 32
+  }]
 }

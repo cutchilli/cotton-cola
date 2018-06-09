@@ -2,33 +2,7 @@ import React, { Component } from 'react';
 
 import Box from './components/box';
 import getPosition from '../../util/get-position';
-
-function drawCrossHair(overlayStyle, x, y) {
-  if (!x || !y) return (<div />);
-
-  const verticalCrossHairStyle = {
-    display: 'inline-block',
-    height: '100%',
-    position: 'absolute',
-    borderLeft: '1px solid cyan',
-    left: x,
-  };
-
-  const horizontalCrossHairStyle = {
-    display: 'inline-block',
-    width: '100%',
-    position: 'absolute',
-    borderTop: '1px solid cyan',
-    top: y,
-  };
-
-  return (
-    <div style={overlayStyle}>
-      <div style={verticalCrossHairStyle} />
-      <div style={horizontalCrossHairStyle} />
-    </div>
-  );
-}
+import CrossHair from './components/cross-hair';
 
 class WorkArea extends Component {
   constructor(...args) {
@@ -140,9 +114,6 @@ class WorkArea extends Component {
       pointerEvents: 'none',
     };
 
-    // Draw cross hair
-    const crossHair = drawCrossHair(overlayStyle, mouseX, mouseY);
-
     const spriteBoxes = boxes
       .map((box, idx) =>
         (<Box
@@ -178,7 +149,11 @@ class WorkArea extends Component {
           height={workAreaStyle.height}
           style={workAreaStyle}
         />
-        { crossHair }
+        <CrossHair
+          overlayStyle={overlayStyle}
+          x={mouseX}
+          y={mouseY}
+        />
         <div
           ref={this.overlayRef}
           style={overlayStyle}

@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 
-import Box from './components/box';
+import { Box, CrossHair } from './components';
 import getPosition from '../../util/get-position';
-import CrossHair from './components/cross-hair';
 
 class WorkArea extends Component {
   constructor(...args) {

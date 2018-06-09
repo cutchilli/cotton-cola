@@ -1,56 +1,7 @@
 import React, { Component } from 'react';
 
-function getPosition(elIncoming) {
-  let el = elIncoming;
-
-  let xPos = 0;
-  let yPos = 0;
-
-  while (el) {
-    if (el.tagName === 'BODY') {
-      // deal with browser quirks with body/window/document and page scroll
-      const xScroll = el.scrollLeft || document.documentElement.scrollLeft;
-      const yScroll = el.scrollTop || document.documentElement.scrollTop;
-
-      xPos += ((el.offsetLeft - xScroll) + el.clientLeft);
-      yPos += ((el.offsetTop - yScroll) + el.clientTop);
-    } else {
-      // for all other non-BODY elements
-      xPos += ((el.offsetLeft - el.scrollLeft) + el.clientLeft);
-      yPos += ((el.offsetTop - el.scrollTop) + el.clientTop);
-    }
-
-    el = el.offsetParent;
-  }
-  return {
-    x: xPos,
-    y: yPos,
-  };
-}
-
-function drawBox(scale, fill, x1, y1, x2, y2, key) {
-  const style = {
-    width: Math.abs(x1 - x2) * scale,
-    height: Math.abs(y1 - y2) * scale,
-    top: Math.min(y1, y2) * scale,
-    left: Math.min(x1, x2) * scale,
-    position: 'absolute',
-    display: 'inline-block',
-    border: '1px solid #FF0000',
-  };
-
-  if (fill) {
-    style.backgroundColor = 'white';
-    style.opacity = 0.5;
-  }
-
-  return (
-    <div
-      key={key}
-      style={style}
-    />
-  );
-}
+import Box from './components/box';
+import getPosition from '../../util/get-position';
 
 function drawCrossHair(overlayStyle, x, y) {
   if (!x || !y) return (<div />);
@@ -193,12 +144,28 @@ class WorkArea extends Component {
     const crossHair = drawCrossHair(overlayStyle, mouseX, mouseY);
 
     const spriteBoxes = boxes
-      .map((box, idx) => drawBox(scale, false, box.x1, box.y1, box.x2, box.y2, idx));
-    const currentBox = null;
+      .map((box, idx) =>
+        (<Box
+          scale={scale}
+          fill={false}
+          x1={box.x1}
+          y1={box.y1}
+          x2={box.x2}
+          y2={box.y2}
+          key={`sprite_${idx}`} //eslint-disable-line
+        />));
 
     // Draw current box
     if (isDrawingBox) {
-      spriteBoxes.push(drawBox(1, true, boxX, boxY, mouseX, mouseY, -1));
+      spriteBoxes.push(<Box
+        scale={1}
+        fill
+        x1={boxX}
+        y1={boxY}
+        x2={mouseX}
+        y2={mouseY}
+        key="currentBox"
+      />);
     }
 
     return (
@@ -216,7 +183,6 @@ class WorkArea extends Component {
           ref={this.overlayRef}
           style={overlayStyle}
         >
-          { currentBox }
           { spriteBoxes }
         </div>
       </div>

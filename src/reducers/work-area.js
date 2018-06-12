@@ -6,6 +6,7 @@ import {
 const defaultState = {
   image: null,
   scale: 1,
+  sprites: {},
 };
 
 const workArea = (state = defaultState, action) => {

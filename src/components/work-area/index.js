@@ -81,7 +81,8 @@ class WorkArea extends Component {
     const canvas = this.canvasRef.current;
     if (!image) return;
 
-    canvas.getContext('2d').drawImage(image, 0, 0, image.width * scale, image.height * scale);
+    canvas.getContext('2d')
+      .drawImage(image, 0, 0, image.width * scale, image.height * scale);
   }
 
   render() {

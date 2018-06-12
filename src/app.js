@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import Dropzone from 'react-dropzone';
@@ -11,7 +12,6 @@ import {
   setWorkAreaScale,
   addOrUpdateSprite,
 } from './actions/index';
-import sampleJson from './samples/sample.json';
 
 import './dropzone.css';
 
@@ -23,7 +23,6 @@ class App extends PureComponent {
     this.drawDivRef = React.createRef();
 
     // Bind up dem crispy events bruz
-    this.onImageDrop = this.onImageDrop.bind(this);
     this.onZoomIn = this.onZoomIn.bind(this);
     this.onZoomOut = this.onZoomOut.bind(this);
     this.onCloseFile = this.onCloseFile.bind(this);
@@ -66,6 +65,7 @@ class App extends PureComponent {
 
   onImageDrop(acceptedFiles) {
     const { actions: { setImage } } = this.props;
+    let imageFile = null;
 
     if (!acceptedFiles
       || acceptedFiles.length === 0
@@ -79,7 +79,7 @@ class App extends PureComponent {
     });
 
     image.addEventListener('load', () => {
-      setImage(image);
+      setImage(image, imageFile.name);
     });
 
     reader.addEventListener('error', () => {
@@ -90,7 +90,8 @@ class App extends PureComponent {
       alert('handle image load error');
     });
 
-    reader.readAsDataURL(acceptedFiles[0]);
+    [imageFile] = acceptedFiles;
+    reader.readAsDataURL(imageFile);
   }
 
   onSpriteUpdate(sprite) {
@@ -101,6 +102,28 @@ class App extends PureComponent {
     } = this.props;
 
     updateSprite(sprite);
+  }
+
+  mapSpriteSheetJson() {
+    const { workArea: { imageName, sprites, animations } } = this.props;
+    const spriteSheet = {};
+
+    if (imageName) {
+      spriteSheet.imageUrl = `./${imageName}`;
+    }
+
+    const animationValues = _.values(animations);
+    const spriteValues = _.values(sprites);
+
+    if (animationValues && animationValues.length > 0) {
+      spriteSheet.animations = animationValues;
+    }
+
+    if (spriteValues && spriteValues.length > 0) {
+      spriteSheet.sprites = spriteValues;
+    }
+
+    return spriteSheet;
   }
 
   render() {
@@ -188,7 +211,7 @@ class App extends PureComponent {
           </div>
           <div className={rightSection}>
             <EmbossedTitle>Json view</EmbossedTitle>
-            <ReactJson theme="monokai" src={sampleJson} enableClipboard={false} displayDataTypes={false} />
+            <ReactJson theme="monokai" src={this.mapSpriteSheetJson()} enableClipboard={false} displayDataTypes={false} />
           </div>
         </div>
       </div>
@@ -202,9 +225,9 @@ const mapStateToProps = ({ workArea }) => ({
 
 const mapDispatchToProps = dispatch => ({
   actions: {
-    closeImage: () => dispatch(setWorkAreaImage(null)),
+    closeImage: () => dispatch(setWorkAreaImage(null, null)),
     scaleImage: scale => dispatch(setWorkAreaScale(scale)),
-    setImage: image => dispatch(setWorkAreaImage(image)),
+    setImage: (image, imageName) => dispatch(setWorkAreaImage(image, imageName)),
     updateSprite: sprite => dispatch(addOrUpdateSprite(sprite)),
   },
 });

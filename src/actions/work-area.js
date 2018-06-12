@@ -3,9 +3,10 @@ export const SET_WORK_AREA_SCALE = 'SET_WORK_AREA_SCALE';
 
 export const UPDATE_SPRITE = 'UPDATE_SPRITE';
 
-export const setWorkAreaImage = image => ({
+export const setWorkAreaImage = (image, imageName) => ({
   type: SET_WORK_AREA_IMAGE,
   image,
+  imageName,
 });
 
 export const setWorkAreaScale = scale => ({

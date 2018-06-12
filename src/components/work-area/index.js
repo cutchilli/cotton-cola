@@ -49,12 +49,17 @@ class WorkArea extends Component {
       // Finished drawing a box
       stateModification.isDrawingBox = false;
 
+      const x1 = boxX / scale;
+      const y1 = boxY / scale;
+      const x2 = mouseX / scale;
+      const y2 = mouseY / scale;
+
       const newSprite = {
-        name: _.uniqueId(),
-        x1: boxX / scale,
-        y1: boxY / scale,
-        width: Math.abs((boxX / scale) - (mouseX / scale)),
-        height: Math.abs((boxY / scale) - (mouseY / scale)),
+        name: _.uniqueId('sprite'),
+        x1: Math.min(x1, x2),
+        y1: Math.min(y1, y2),
+        width: Math.abs(x1 - x2),
+        height: Math.abs(y1 - y2),
       };
 
       stateModification.boxX = null;

@@ -1,83 +1,8 @@
+import _ from 'lodash';
 import React, { Component } from 'react';
 
-function getPosition(elIncoming) {
-  let el = elIncoming;
-
-  let xPos = 0;
-  let yPos = 0;
-
-  while (el) {
-    if (el.tagName === 'BODY') {
-      // deal with browser quirks with body/window/document and page scroll
-      const xScroll = el.scrollLeft || document.documentElement.scrollLeft;
-      const yScroll = el.scrollTop || document.documentElement.scrollTop;
-
-      xPos += ((el.offsetLeft - xScroll) + el.clientLeft);
-      yPos += ((el.offsetTop - yScroll) + el.clientTop);
-    } else {
-      // for all other non-BODY elements
-      xPos += ((el.offsetLeft - el.scrollLeft) + el.clientLeft);
-      yPos += ((el.offsetTop - el.scrollTop) + el.clientTop);
-    }
-
-    el = el.offsetParent;
-  }
-  return {
-    x: xPos,
-    y: yPos,
-  };
-}
-
-function drawBox(scale, fill, x1, y1, x2, y2, key) {
-  const style = {
-    width: Math.abs(x1 - x2) * scale,
-    height: Math.abs(y1 - y2) * scale,
-    top: Math.min(y1, y2) * scale,
-    left: Math.min(x1, x2) * scale,
-    position: 'absolute',
-    display: 'inline-block',
-    border: '1px solid #FF0000',
-  };
-
-  if (fill) {
-    style.backgroundColor = 'white';
-    style.opacity = 0.5;
-  }
-
-  return (
-    <div
-      key={key}
-      style={style}
-    />
-  );
-}
-
-function drawCrossHair(overlayStyle, x, y) {
-  if (!x || !y) return (<div />);
-
-  const verticalCrossHairStyle = {
-    display: 'inline-block',
-    height: '100%',
-    position: 'absolute',
-    borderLeft: '1px solid cyan',
-    left: x,
-  };
-
-  const horizontalCrossHairStyle = {
-    display: 'inline-block',
-    width: '100%',
-    position: 'absolute',
-    borderTop: '1px solid cyan',
-    top: y,
-  };
-
-  return (
-    <div style={overlayStyle}>
-      <div style={verticalCrossHairStyle} />
-      <div style={horizontalCrossHairStyle} />
-    </div>
-  );
-}
+import { Box, CrossHair } from './components';
+import getPosition from '../../util/get-position';
 
 class WorkArea extends Component {
   constructor(...args) {
@@ -94,9 +19,6 @@ class WorkArea extends Component {
       isDrawingBox: false,
       boxX: null,
       boxY: null,
-
-      // Historical Boxes
-      boxes: [],
     };
 
     this.onCanvasClick = this.onCanvasClick.bind(this);
@@ -112,9 +34,9 @@ class WorkArea extends Component {
   }
 
   onCanvasClick() {
-    const { scale } = this.props;
+    const { scale, onSpriteUpdate } = this.props;
     const {
-      isDrawingBox, mouseX, mouseY, boxX, boxY, boxes,
+      isDrawingBox, mouseX, mouseY, boxX, boxY,
     } = this.state;
 
     const stateModification = {};
@@ -126,16 +48,24 @@ class WorkArea extends Component {
     } else {
       // Finished drawing a box
       stateModification.isDrawingBox = false;
-      const newBox = {
-        x1: boxX / scale,
-        y1: boxY / scale,
-        x2: mouseX / scale,
-        y2: mouseY / scale,
+
+      const x1 = boxX / scale;
+      const y1 = boxY / scale;
+      const x2 = mouseX / scale;
+      const y2 = mouseY / scale;
+
+      const newSprite = {
+        name: _.uniqueId('sprite'),
+        x1: Math.min(x1, x2),
+        y1: Math.min(y1, y2),
+        width: Math.abs(x1 - x2),
+        height: Math.abs(y1 - y2),
       };
 
-      stateModification.boxes = [...boxes, newBox];
       stateModification.boxX = null;
       stateModification.boxY = null;
+
+      onSpriteUpdate(newSprite);
     }
 
     this.setState(Object.assign(this.state, stateModification));
@@ -157,17 +87,18 @@ class WorkArea extends Component {
     const canvas = this.canvasRef.current;
     if (!image) return;
 
-    canvas.getContext('2d').drawImage(image, 0, 0, image.width * scale, image.height * scale);
+    canvas.getContext('2d')
+      .drawImage(image, 0, 0, image.width * scale, image.height * scale);
   }
 
   render() {
     const {
       image,
       scale,
+      sprites,
       drawDivRef,
     } = this.props;
     const {
-      boxes,
       mouseX,
       mouseY,
       isDrawingBox,
@@ -189,16 +120,29 @@ class WorkArea extends Component {
       pointerEvents: 'none',
     };
 
-    // Draw cross hair
-    const crossHair = drawCrossHair(overlayStyle, mouseX, mouseY);
-
-    const spriteBoxes = boxes
-      .map((box, idx) => drawBox(scale, false, box.x1, box.y1, box.x2, box.y2, idx));
-    const currentBox = null;
+    const spriteBoxes = _.values(sprites)
+      .map(sprite =>
+        (<Box
+          scale={scale}
+          fill={false}
+          x1={sprite.x1}
+          y1={sprite.y1}
+          x2={sprite.x1 + sprite.width}
+          y2={sprite.y1 + sprite.height}
+          key={sprite.name}
+        />));
 
     // Draw current box
     if (isDrawingBox) {
-      spriteBoxes.push(drawBox(1, true, boxX, boxY, mouseX, mouseY, -1));
+      spriteBoxes.push(<Box
+        scale={1}
+        fill
+        x1={boxX}
+        y1={boxY}
+        x2={mouseX}
+        y2={mouseY}
+        key="currentBox"
+      />);
     }
 
     return (
@@ -211,12 +155,15 @@ class WorkArea extends Component {
           height={workAreaStyle.height}
           style={workAreaStyle}
         />
-        { crossHair }
+        <CrossHair
+          overlayStyle={overlayStyle}
+          x={mouseX}
+          y={mouseY}
+        />
         <div
           ref={this.overlayRef}
           style={overlayStyle}
         >
-          { currentBox }
           { spriteBoxes }
         </div>
       </div>

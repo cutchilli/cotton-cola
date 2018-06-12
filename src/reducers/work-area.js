@@ -1,7 +1,8 @@
 import {
   SET_WORK_AREA_IMAGE,
   SET_WORK_AREA_SCALE,
- } from '../actions';
+  UPDATE_SPRITE,
+} from '../actions';
 
 const defaultState = {
   image: null,
@@ -20,6 +21,14 @@ const workArea = (state = defaultState, action) => {
       return {
         ...state,
         scale: action.scale,
+      };
+    case UPDATE_SPRITE:
+      return {
+        ...state,
+        sprites: {
+          ...state.sprites,
+          [action.sprite.name]: action.sprite,
+        },
       };
     default:
       return state;

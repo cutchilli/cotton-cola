@@ -9,6 +9,7 @@ import WorkArea from './components/work-area';
 import {
   setWorkAreaImage,
   setWorkAreaScale,
+  addOrUpdateSprite,
 } from './actions/index';
 import sampleJson from './samples/sample.json';
 
@@ -27,6 +28,7 @@ class App extends PureComponent {
     this.onZoomOut = this.onZoomOut.bind(this);
     this.onCloseFile = this.onCloseFile.bind(this);
     this.onImageDrop = this.onImageDrop.bind(this);
+    this.onSpriteUpdate = this.onSpriteUpdate.bind(this);
   }
 
   onZoomIn() {
@@ -89,6 +91,16 @@ class App extends PureComponent {
     });
 
     reader.readAsDataURL(acceptedFiles[0]);
+  }
+
+  onSpriteUpdate(sprite) {
+    const {
+      actions: {
+        updateSprite,
+      },
+    } = this.props;
+
+    updateSprite(sprite);
   }
 
   render() {
@@ -166,7 +178,13 @@ class App extends PureComponent {
                 return 'Drag a sprite sheet image file on me.';
               }}
             </Dropzone>
-            <WorkArea image={image} scale={scale} drawDivRef={this.drawDivRef} />
+            <WorkArea
+              sprites={workArea.sprites}
+              onSpriteUpdate={this.onSpriteUpdate}
+              image={image}
+              scale={scale}
+              drawDivRef={this.drawDivRef}
+            />
           </div>
           <div className={rightSection}>
             <EmbossedTitle>Json view</EmbossedTitle>
@@ -187,6 +205,7 @@ const mapDispatchToProps = dispatch => ({
     closeImage: () => dispatch(setWorkAreaImage(null)),
     scaleImage: scale => dispatch(setWorkAreaScale(scale)),
     setImage: image => dispatch(setWorkAreaImage(image)),
+    updateSprite: sprite => dispatch(addOrUpdateSprite(sprite)),
   },
 });
 

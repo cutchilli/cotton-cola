@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React, { Component } from 'react';
 
 import { Box, CrossHair } from './components';
@@ -18,9 +19,6 @@ class WorkArea extends Component {
       isDrawingBox: false,
       boxX: null,
       boxY: null,
-
-      // Historical Boxes
-      boxes: [],
     };
 
     this.onCanvasClick = this.onCanvasClick.bind(this);
@@ -36,9 +34,9 @@ class WorkArea extends Component {
   }
 
   onCanvasClick() {
-    const { scale } = this.props;
+    const { scale, onSpriteUpdate } = this.props;
     const {
-      isDrawingBox, mouseX, mouseY, boxX, boxY, boxes,
+      isDrawingBox, mouseX, mouseY, boxX, boxY,
     } = this.state;
 
     const stateModification = {};
@@ -50,16 +48,19 @@ class WorkArea extends Component {
     } else {
       // Finished drawing a box
       stateModification.isDrawingBox = false;
-      const newBox = {
+
+      const newSprite = {
+        name: _.uniqueId(),
         x1: boxX / scale,
         y1: boxY / scale,
-        x2: mouseX / scale,
-        y2: mouseY / scale,
+        width: Math.abs((boxX / scale) - (mouseX / scale)),
+        height: Math.abs((boxY / scale) - (mouseY / scale)),
       };
 
-      stateModification.boxes = [...boxes, newBox];
       stateModification.boxX = null;
       stateModification.boxY = null;
+
+      onSpriteUpdate(newSprite);
     }
 
     this.setState(Object.assign(this.state, stateModification));
@@ -89,10 +90,10 @@ class WorkArea extends Component {
     const {
       image,
       scale,
+      sprites,
       drawDivRef,
     } = this.props;
     const {
-      boxes,
       mouseX,
       mouseY,
       isDrawingBox,
@@ -114,16 +115,16 @@ class WorkArea extends Component {
       pointerEvents: 'none',
     };
 
-    const spriteBoxes = boxes
-      .map((box, idx) =>
+    const spriteBoxes = _.values(sprites)
+      .map(sprite =>
         (<Box
           scale={scale}
           fill={false}
-          x1={box.x1}
-          y1={box.y1}
-          x2={box.x2}
-          y2={box.y2}
-          key={`sprite_${idx}`} //eslint-disable-line
+          x1={sprite.x1}
+          y1={sprite.y1}
+          x2={sprite.x1 + sprite.width}
+          y2={sprite.y1 + sprite.height}
+          key={sprite.name}
         />));
 
     // Draw current box
